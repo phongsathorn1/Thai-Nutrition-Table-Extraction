@@ -142,4 +142,4 @@ warped_gray = cv2.bilateralFilter(warped_gray, 9, 75, 75)
 # warped_gray = ~warped_gray
 warped_rgb = cv2.cvtColor(warped_gray, cv2.COLOR_GRAY2RGB)
 # text_detection.text_detection(warped_rgb)
-text_detection.text_detection((warped_rgb), min_confidence=0.4)
+text_detection.text_detection((warped_rgb), min_confidence=0.6)

@@ -10,9 +10,9 @@ import cv2
 from nms import nms
 import numpy as np
 
-import utils
 from .decode import decode
 from .draw import drawPolygons, drawBoxes
+import utils
 
 EAST_DETECT_PATH = 'text_detection/frozen_east_text_detection.pb'
 
