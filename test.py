@@ -3,6 +3,7 @@ import cv2
 import matplotlib.pyplot as plt
 
 import utils
+from text_detection import text_detection
 
 def findRectangle(img):
     # find contour
@@ -138,7 +139,7 @@ warped_gray = cv2.filter2D(warped_gray, -1, kernel)
 ret, warped_gray = cv2.threshold(warped_gray, 70, 255, cv2.THRESH_BINARY)
 warped_gray = cv2.bilateralFilter(warped_gray, 9, 75, 75)
 
-warped_gray = ~warped_gray
-
-plt.imshow(warped_gray, cmap='gray')
-plt.show()
+# warped_gray = ~warped_gray
+warped_rgb = cv2.cvtColor(warped_gray, cv2.COLOR_GRAY2RGB)
+# text_detection.text_detection(warped_rgb)
+text_detection.text_detection((warped_rgb), min_confidence=0.4)
