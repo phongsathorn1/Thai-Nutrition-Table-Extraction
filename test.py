@@ -7,8 +7,7 @@ from text_detection import text_detection
 
 def findRectangle(img):
     # find contour
-    im, contours, hierarchy = cv2.findContours(
-        img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     # find second lagest contour
     max_area, max_cnt = 0, None
@@ -95,7 +94,6 @@ def four_point_transform(image, pts):
 img_c = cv2.imread('images/2020-05-01 13.50.10.jpg')
 # img_c = cv2.imread("images/2020-05-01 13.51.05.jpg")
 # img_c = cv2.imread('images/2020-05-01 13.50.54.jpg')
-# img_c = cv2.imread('images/2020-05-01 13.50.59.jpg')
 
 img_c = cv2.cvtColor(img_c, cv2.COLOR_BGR2RGB)
 img_c = cv2.bilateralFilter(img_c, 9, 75, 75)
@@ -136,10 +134,16 @@ warped = four_point_transform(img_c, approx.reshape(4, 2))
 warped_gray = cv2.cvtColor(warped, cv2.COLOR_RGB2GRAY)
 kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
 warped_gray = cv2.filter2D(warped_gray, -1, kernel)
-ret, warped_gray = cv2.threshold(warped_gray, 70, 255, cv2.THRESH_BINARY)
-warped_gray = cv2.bilateralFilter(warped_gray, 9, 75, 75)
+warped_gray = cv2.bilateralFilter(warped_gray, 11, 25, 75)
+warped_gray = cv2.equalizeHist(warped_gray)
+warped_gray = cv2.adaptiveThreshold(
+    warped_gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 13, 3)
+# ret, warped_gray = cv2.threshold(warped_gray, 90, 255, cv2.THRESH_BINARY)
 
 # warped_gray = ~warped_gray
+# plt.imshow(warped_gray, cmap='gray')
+# plt.show()
+
 warped_rgb = cv2.cvtColor(warped_gray, cv2.COLOR_GRAY2RGB)
-# text_detection.text_detection(warped_rgb)
-text_detection.text_detection((warped_rgb), min_confidence=0.6)
+cv2.imwrite('test2.jpg', warped)
+# text_detection.text_detection((warped_rgb), min_confidence=0.6)

@@ -1,1 +1,0 @@
-name = "opencv-text-detection"
