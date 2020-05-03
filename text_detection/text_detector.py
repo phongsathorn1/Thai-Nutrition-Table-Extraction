@@ -16,19 +16,6 @@ from .utils.text_connector.detectors import TextDetector
 tf.app.flags.DEFINE_string('checkpoint_path', 'text_detection/checkpoints_mlt/', '')
 FLAGS = tf.app.flags.FLAGS
 
-def get_images():
-    files = []
-    exts = ['jpg', 'png', 'jpeg', 'JPG']
-    for parent, dirnames, filenames in os.walk(FLAGS.test_data_path):
-        for filename in filenames:
-            for ext in exts:
-                if filename.endswith(ext):
-                    files.append(os.path.join(parent, filename))
-                    break
-    print('Find {} images'.format(len(files)))
-    return files
-
-
 def resize_image(img):
     img_size = img.shape
     im_size_min = np.min(img_size[0:2])
