@@ -159,11 +159,10 @@ if __name__ == '__main__':
     img = cv2.cvtColor(img_c, cv2.COLOR_BGR2GRAY)
 
     # adaptive gussian treshold
-    th3 = cv2.adaptiveThreshold(
+    thresh = cv2.adaptiveThreshold(
         img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
 
-    area, cnt = findRectangle(th3)
-    t2 = np.zeros(th3.shape, np.uint8)
+    area, cnt = findRectangle(thresh)
 
     # cropped image
     x, y, w, h = cv2.boundingRect(cnt)
@@ -172,8 +171,8 @@ if __name__ == '__main__':
     # Find 4 corner of label
     epsilon = 0.08 * cv2.arcLength(cnt, True)
     approx = cv2.approxPolyDP(cnt, epsilon, True)
-
     warped = four_point_transform(img_c, approx.reshape(4, 2))
+
     # Covert to gray scale
     warped_gray = cv2.cvtColor(warped, cv2.COLOR_RGB2GRAY)
     h, w = warped_gray.shape[:2]
@@ -189,9 +188,9 @@ if __name__ == '__main__':
 
     warped_gray = cv2.GaussianBlur(warped_gray, (3,3), 2)
     warped_gray = cv2.bilateralFilter(warped_gray, 13, 35, 75)
-
     warped_gray = cv2.adaptiveThreshold(
         warped_gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 13, 3)
+
     warped_rgb = cv2.cvtColor(warped_gray, cv2.COLOR_GRAY2RGB)
     warped_rgb_copy = warped_rgb.copy()
 
@@ -201,12 +200,14 @@ if __name__ == '__main__':
     # padding = (4, 8, 10, 4)
     padding = (4, 6, 10, 4)
 
+    # Draw bounding box
     for i, box in enumerate(result):
         pt = box[:8].astype(np.int32).reshape((4, 2))
         pt2 = getRectanglePoint(pt)
         x1, y1, x2, y2 = paddingRectanglePoint(pt2, padding, warped_rgb_copy.shape[:2])
         cv2.rectangle(warped_rgb_copy, (x1, y1), (x2, y2), (0, 255, 0), thickness=2)
 
+    # Clear console screen
     utils.clear()
 
     for i, box in enumerate(result):
@@ -215,7 +216,7 @@ if __name__ == '__main__':
 
         angle, label = correct_skew(label)
 
-        # Draw boudaries
+        # Draw id for each label
         font_scale = 1.2
         font = cv2.FONT_HERSHEY_PLAIN
         rectangle_bgr = (0, 255, 0)
@@ -227,6 +228,7 @@ if __name__ == '__main__':
         cv2.rectangle(warped_rgb_copy, box_coords[0], box_coords[1], rectangle_bgr, cv2.FILLED)
         cv2.putText(warped_rgb_copy, text, (pt[0][0], pt[0][1]), font, fontScale=font_scale, color=(0, 0, 0), thickness=2)
 
+        # Do text OCR
         text_ocr = pytesseract.image_to_string(label, lang='tha')
         if text_ocr.replace(' ', '').replace('\n', '') != '':
             print("ID: %d" %(i))
