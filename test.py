@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+import pytesseract
 
 import utils
 from text_detection import text_detector
@@ -25,7 +26,6 @@ def findRectangle(img):
             second_cnt = cnt
 
     return second_area, second_cnt
-
 
 def order_points(pts):
     # initialzie a list of coordinates that will be ordered
@@ -89,11 +89,26 @@ def four_point_transform(image, pts):
     # return the warped image
     return warped
 
+def textLabel(image, pt, padding=None):
+    # padding (left, top, right, bottom)
+    x1 = min(pt[:, 0])
+    x2 = max(pt[:, 0])
+    y1 = min(pt[:, 1])
+    y2 = max(pt[:, 1])
+
+    if padding is not None:
+        x1 -= padding[0]
+        y1 += padding[1]
+        x2 += padding[2]
+        y2 -= padding[3]
+
+    label = utils.crop(image, (x1, y1), (x2, y2))
+    return label
 
 # image read
-# img_c = cv2.imread('images/2020-05-01 13.50.10.jpg')
+img_c = cv2.imread('images/2020-05-01 13.50.10.jpg')
 # img_c = cv2.imread("images/2020-05-01 13.51.05.jpg")
-img_c = cv2.imread('images/2020-05-01 13.50.54.jpg')
+# img_c = cv2.imread('images/2020-05-01 13.50.54.jpg')
 
 img_c = cv2.cvtColor(img_c, cv2.COLOR_BGR2RGB)
 img_c = cv2.bilateralFilter(img_c, 9, 75, 75)
@@ -105,11 +120,8 @@ th3 = cv2.adaptiveThreshold(
 
 area, cnt = findRectangle(th3)
 
-# crate bounding rectangle
-x, y, w, h = cv2.boundingRect(cnt)
-img_c = cv2.rectangle(img_c, (x, y), (x+w, y+h), (0, 255, 0), 2)
-
 # cropped image
+x, y, w, h = cv2.boundingRect(cnt)
 img_cropped = utils.crop(img_c, (x, y), (x+w, y+h))
 
 # picked white label only
@@ -124,8 +136,6 @@ mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
 # Find 4 corner of label
 epsilon = 0.08 * cv2.arcLength(cnt, True)
 approx = cv2.approxPolyDP(cnt, epsilon, True)
-# for x in range(0, len(approx)):
-#     cv2.circle(img_c, (approx[x][0][0], approx[x][0][1]), 10, (255, 0, 0), -1)
 
 print(approx)
 warped = four_point_transform(img_c, approx.reshape(4, 2))
@@ -151,10 +161,48 @@ warped_gray = cv2.adaptiveThreshold(
 # plt.show()
 
 warped_rgb = cv2.cvtColor(warped_gray, cv2.COLOR_GRAY2RGB)
+
+# Find text area
 result = text_detector.detect(warped_rgb)
+labels = []
 
 for i, box in enumerate(result):
     cv2.polylines(warped_rgb, [box[:8].astype(np.int32).reshape((-1, 1, 2))], True, color=(0, 255, 0), thickness=2)
 
+for i, box in enumerate(result):
+    pt = box[:8].astype(np.int32).reshape((4, 2))
+    padding = (5, 5, 5, 5)
+    label = textLabel(warped_rgb, pt)
+    labels.append(label)
+
+    # Draw boudaries
+    font_scale = 1.2
+    font = cv2.FONT_HERSHEY_PLAIN
+    rectangle_bgr = (0, 255, 0)
+    text = "ID : {}".format(i)
+
+    # text_offset_x = 10
+    # text_offset_y = warped_rgb.shape[0] - 25
+    (text_width, text_height) = cv2.getTextSize(text, font, fontScale=font_scale, thickness=1)[0]
+
+    # cv2.polylines(warped_rgb, [pt.reshape((-1, 1, 2))], True, color=(0, 255, 0), thickness=2)
+
+    box_coords = ((pt[0][0], pt[0][1]), (pt[0][0] + text_width + 5, pt[0][1] - text_height - 12))
+    cv2.rectangle(warped_rgb, box_coords[0], box_coords[1], rectangle_bgr, cv2.FILLED)
+    cv2.putText(warped_rgb, text, (pt[0][0], pt[0][1]), font, fontScale=font_scale, color=(0, 0, 0), thickness=2)
+
+    text_ocr = pytesseract.image_to_string(label, lang='tha')
+    if text_ocr.replace(' ', '') != '':
+        print("ID: %d" %(i))
+        print("Result \"%s\"" %(text_ocr))
+        print("==========")
+
 plt.imshow(warped_rgb)
 plt.show()
+    # print(pts)
+# for i, box in enumerate(result):
+#     # cv2.polylines(warped_rgb, [box[:8].astype(np.int32).reshape((-1, 1, 2))], True, color=(0, 255, 0), thickness=2)
+#     print(pytesseract.image_to_string(utils.crop(warped_rgb, ), lang='fra'))
+
+# plt.imshow(warped_rgb)
+# plt.show()
