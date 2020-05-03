@@ -2,6 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 import math
+import os
+
+from subprocess import call 
 
 def imshow_pair(image1, image2, cmap1=None, cmap2=None):
     fig, axr = plt.subplots(1, 2)
@@ -112,6 +115,10 @@ def rotate_around_point(xy, radians, origin=(0, 0)):
     qy = offset_y + -sin_rad * adjusted_x + cos_rad * adjusted_y
 
     return qx, qy
+
+def clear(): 
+    # check and make call for specific operating system 
+    _ = call('clear' if os.name =='posix' else 'cls') 
 
 if __name__ == "__main__":
     pass
