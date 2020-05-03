@@ -3,7 +3,7 @@ import cv2
 import matplotlib.pyplot as plt
 
 import utils
-from text_detection import text_detection
+from text_detection import text_detector
 
 def findRectangle(img):
     # find contour
@@ -91,9 +91,9 @@ def four_point_transform(image, pts):
 
 
 # image read
-img_c = cv2.imread('images/2020-05-01 13.50.10.jpg')
+# img_c = cv2.imread('images/2020-05-01 13.50.10.jpg')
 # img_c = cv2.imread("images/2020-05-01 13.51.05.jpg")
-# img_c = cv2.imread('images/2020-05-01 13.50.54.jpg')
+img_c = cv2.imread('images/2020-05-01 13.50.54.jpg')
 
 img_c = cv2.cvtColor(img_c, cv2.COLOR_BGR2RGB)
 img_c = cv2.bilateralFilter(img_c, 9, 75, 75)
@@ -124,18 +124,24 @@ mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
 # Find 4 corner of label
 epsilon = 0.08 * cv2.arcLength(cnt, True)
 approx = cv2.approxPolyDP(cnt, epsilon, True)
-for x in range(0, len(approx)):
-    cv2.circle(img_c, (approx[x][0][0], approx[x][0][1]), 10, (255, 0, 0), -1)
+# for x in range(0, len(approx)):
+#     cv2.circle(img_c, (approx[x][0][0], approx[x][0][1]), 10, (255, 0, 0), -1)
 
 print(approx)
 warped = four_point_transform(img_c, approx.reshape(4, 2))
 
 # Covert to gray scale
 warped_gray = cv2.cvtColor(warped, cv2.COLOR_RGB2GRAY)
-kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
+
+# Make image more shaper
+kernel = np.array([
+    [-1, -1, -1],
+    [-1, 9, -1],
+    [-1, -1, -1]
+])
 warped_gray = cv2.filter2D(warped_gray, -1, kernel)
 warped_gray = cv2.bilateralFilter(warped_gray, 11, 25, 75)
-warped_gray = cv2.equalizeHist(warped_gray)
+
 warped_gray = cv2.adaptiveThreshold(
     warped_gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 13, 3)
 # ret, warped_gray = cv2.threshold(warped_gray, 90, 255, cv2.THRESH_BINARY)
@@ -145,5 +151,10 @@ warped_gray = cv2.adaptiveThreshold(
 # plt.show()
 
 warped_rgb = cv2.cvtColor(warped_gray, cv2.COLOR_GRAY2RGB)
-cv2.imwrite('test2.jpg', warped)
-# text_detection.text_detection((warped_rgb), min_confidence=0.6)
+result = text_detector.detect(warped_rgb)
+
+for i, box in enumerate(result):
+    cv2.polylines(warped_rgb, [box[:8].astype(np.int32).reshape((-1, 1, 2))], True, color=(0, 255, 0), thickness=2)
+
+plt.imshow(warped_rgb)
+plt.show()

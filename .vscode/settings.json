@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "/Users/phongsathorn/miniconda3/bin/python"
+    "python.pythonPath": "env/bin/python",
+    "discord.enabled": true
 }
