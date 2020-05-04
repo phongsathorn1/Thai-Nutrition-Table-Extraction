@@ -150,9 +150,12 @@ def correct_skew(image, delta=1, limit=5):
 
 if __name__ == '__main__':
     # image read
-    # img_c = cv2.imread('images/2020-05-01 13.50.10.jpg')
+    img_c = cv2.imread('images/2020-05-01 13.50.10.jpg')
     # img_c = cv2.imread('images/2020-05-03 20.22.49.jpg')
-    img_c = cv2.imread('images/2020-05-04 00.23.28.jpg')
+    # img_c = cv2.imread('images/2020-05-04 00.23.28.jpg')
+    # img_c = cv2.imread('images/2020-05-01 13.50.54.jpg')
+    # img_c = cv2.imread('images/2020-05-03 20.22.19.jpg')
+    # img_c = cv2.imread('images/2020-05-03 20.22.43.jpg')
 
     img_c = cv2.cvtColor(img_c, cv2.COLOR_BGR2RGB)
     img_c = cv2.bilateralFilter(img_c, 9, 75, 75)
