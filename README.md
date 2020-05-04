@@ -32,6 +32,9 @@ chmod +x make.sh
 
 5. Install Tesseract pretrained to supporting Thai language by going to [this page](https://github.com/tesseract-ocr/tessdata_best) and download `tha.traineddata`. Then set the `TESSDATA_PREFIX` environment variable and put file in `ESSDATA_PREFIX/tessdata/tha.traineddata`.
 
+## Dataset
+- The Thai Nutrition Table images are in `images/` directory.
+
 ## Demo
 - Run `main.py` to see result.
 ```bash
