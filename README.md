@@ -3,7 +3,7 @@
 
 This project is created to extract data form Nutrition Table to help user collect data about nutrition to use with Health care application, Fitness app, etc.
 
-**NOTIC** Thank to [text-detection-ctpn](https://github.com/eragonruan/text-detection-ctpn) and [Tesseract](https://github.com/tesseract-ocr/tesseract), we using their source code for detect and recognize text in nutrition table.
+**NOTICE** Thank to [text-detection-ctpn](https://github.com/eragonruan/text-detection-ctpn) and [Tesseract](https://github.com/tesseract-ocr/tesseract), we using their source code for detect and recognize text in nutrition table.
 
 ---
 ## Requirement
