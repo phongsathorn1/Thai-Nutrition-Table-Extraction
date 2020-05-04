@@ -13,7 +13,7 @@ This project is created to extract data form Nutrition Table to help user collec
 1. Install Python libraries.
 
 ```bash
-    pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 2. Check directory `text_detection/checkpoints_mlt`. If directory not exists, download the file from [google drive](https://drive.google.com/file/d/1HcZuB_MHqsKhKEKpfF1pEU85CYy4OlWO/view?usp=sharing) or [baidu yun](https://pan.baidu.com/s/1BNHt_9fiqRPGmEXPaxaFXw). Then extract file and put `checkpoints_mlt/` in `text-detection/`.
