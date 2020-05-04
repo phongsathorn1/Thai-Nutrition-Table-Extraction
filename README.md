@@ -26,6 +26,10 @@ chmod +x make.sh
 ./make.sh
 ```
 
+4. [Install Tesseract](https://tesseract-ocr.github.io/tessdoc/Home.html) by following [this document](https://tesseract-ocr.github.io/tessdoc/Home.html)
+
+5. Install Tesseract pretrained to supporting Thai language by going to [this page](https://github.com/tesseract-ocr/tessdata_best) and download `tha.traineddata`. Then put in `ESSDATA_PREFIX/tessdata/tha.traineddata`
+
 ## Demo
 - Run `main.py` to see result
 ```bash
